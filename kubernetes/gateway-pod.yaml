@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+spec:
+  replicas: 1
+  minReadySeconds: 15
+  selector:
+    matchLabels:
+      app: gateway
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: 
+      maxUnavailable: 1
+      maxSurge: 1 
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+      - image: patrykzygmunt/gateway:prod2
+        imagePullPolicy: Always
+        name: gateway
+        env:
+          - name: COMMUNITY_URL
+            value: http://$(UNIVERSE_SERVICE_SERVICE_HOST):$(UNIVERSE_SERVICE_SERVICE_PORT)
+          - name: COMMENT_URL
+            value: http://$(NODEJS_SERVICE_HOST):$(NODEJS_SERVICE_PORT)
+          - name: AUTH_URL
+            value: http://$(AUTH_SERVICE_HOST):$(AUTH_SERVICE_PORT)
+          - name: STAT_URL
+            value: http://$(STAT_SERVICE_SERVICE_HOST):$(STAT_SERVICE_SERVICE_PORT)
+          - name: FILE_URL
+            value: http://$(MULTIMEDIA_SERVICE_SERVICE_HOST):$(MULTIMEDIA_SERVICE_SERVICE_PORT)
+         
+        ports:
+          - containerPort: 8000

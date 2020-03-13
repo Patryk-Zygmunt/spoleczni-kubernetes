@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment                                          # 1
+metadata:
+  name: auth
+spec:
+  replicas: 1                                             # 2
+  minReadySeconds: 15
+  selector:
+    matchLabels:
+      app: auth
+  strategy:
+    type: RollingUpdate                                   # 3
+    rollingUpdate: 
+      maxUnavailable: 1                                   # 4
+      maxSurge: 1                                         # 5
+  template:                                               # 6
+    metadata:
+      labels:
+        app: auth                                  # 7
+    spec:
+      containers:
+        - image: patrykzygmunt/auth-service:prod   
+          imagePullPolicy: Always                         # 8
+          name: auth
+          ports:
+            - containerPort: 9103
+          

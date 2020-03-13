@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment                                          # 1
+metadata:
+  name: multimedia
+spec:
+  replicas: 1                                            # 2
+  minReadySeconds: 15
+  selector:
+    matchLabels:
+      app: multimedia
+  strategy:
+    type: RollingUpdate                                   # 3
+    rollingUpdate: 
+      maxUnavailable: 1                                   # 4
+      maxSurge: 1                                         # 5
+  template:                                               # 6
+    metadata:
+      labels:
+        app: multimedia                                  # 7
+    spec:
+      containers:
+        - image: patrykzygmunt/files-service
+          imagePullPolicy: Always                         # 8
+          name: multimedia
+          ports:
+            - containerPort: 8070
+          env:
+            - name: POSTGRES_DB_HOST
+              value: jdbc:postgresql://$(PDB_POSTGRESQL_SERVICE_HOST):5432/postgres
+            - name: POSTGRES_DB_USER
+              value: "postgres"
+            - name: POSTGRES_DB_PASSWORD
+              value: "secretpassword"

@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment                                          # 1
+metadata:
+  name: universe
+spec:
+  replicas: 1                                            # 2
+  minReadySeconds: 15
+  selector:
+    matchLabels:
+      app: universe
+  strategy:
+    type: RollingUpdate                                   # 3
+    rollingUpdate: 
+      maxUnavailable: 1                                   # 4
+      maxSurge: 1                                         # 5
+  template:                                               # 6
+    metadata:
+      labels:
+        app: universe                                  # 7
+    spec:
+      containers:
+        - image: patrykzygmunt/universe-service:prod2
+          imagePullPolicy: Always                         # 8
+          name: universe         
+          ports:
+            - containerPort: 8081
+          env:
+            - name: DB_URL
+              value: jdbc:postgresql://$(PDB_POSTGRESQL_SERVICE_HOST):5432/postgres
+            - name: KAFKA_HOST 
+              value: "http://stat-service/"
+            - name: DB_USER
+              value: "postgres"
+            - name: DB_PASSWORD
+              value: "secretpassword"
+          
+   
+# k exec -it postgres-postgresql-0 -- sh
