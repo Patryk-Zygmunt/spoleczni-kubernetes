@@ -1,1 +1,1 @@
-helm install postgres   --set postgresqlPassword=secretpassword,postgresqlDatabase=multimedia-db   stable/postgresql
+kubectl apply -f ./kubernetes/
